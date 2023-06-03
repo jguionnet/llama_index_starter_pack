@@ -1,0 +1,92 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: lahonda
+  name: ai-index
+  labels:
+    app: ai-index
+    gwcp.guidewire.com/dept: "275"
+    gwcp.guidewire.com/maintained-by: pod-lahonda
+    gwcp.guidewire.com/created-by: pod-lahonda
+    gwcp.guidewire.com/tenant-name: lahonda
+    gwcp.guidewire.com/version: 0.0.1
+    gwcp.guidewire.com/app-name: ai-index
+  annotations:
+    prometheus.io/probe: "true"
+spec:
+  ports:
+    - name: http
+      port: 5001
+  selector:
+    app: ai-index
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: lahonda
+  name: ai-index
+  labels:
+    app: ai-index
+    gwcp.guidewire.com/dept: "275"
+    gwcp.guidewire.com/maintained-by: pod-lahonda
+    gwcp.guidewire.com/created-by: pod-lahonda
+    gwcp.guidewire.com/tenant-name: lahonda
+    gwcp.guidewire.com/version: 0.0.1
+    gwcp.guidewire.com/app-name: ai-index
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-index
+  template:
+    metadata:
+      labels:
+        app: ai-index
+        gwcp.guidewire.com/dept: "275"
+        gwcp.guidewire.com/maintained-by: pod-lahonda
+        gwcp.guidewire.com/created-by: pod-lahonda
+        gwcp.guidewire.com/tenant-name: lahonda
+        gwcp.guidewire.com/version: 0.0.1
+        gwcp.guidewire.com/app-name: ai-index
+    spec:
+      containers:
+        - image: busybox
+          name: bb
+          command:
+            - "/bin/sh"
+            - "-c"
+            - "while true; do ls -al /app/storage; sleep 5; done"
+          env:
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ai-index-api-key
+                  key: JG_OAI_API_KEY
+          volumeMounts:
+            - name: index-volume
+              mountPath: /app/storage   
+        - name: index-server
+          image: jguionne/index_server:latest
+          command: ["python", "index_server.py"]
+          ports:
+            - containerPort: 5602
+          env:
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ai-index-api-key
+                  key: JG_OAI_API_KEY
+          volumeMounts:
+            - name: index-volume
+              mountPath: /app/storage
+        - name: api-server
+          image: jguionne/flask_demo:latest
+          command: ["python", "flask_demo.py"]
+          ports:
+            - containerPort: 5602
+            - containerPort: 5001
+      volumes:     
+        - name: index-volume
+          persistentVolumeClaim:
+            claimName: ai-index

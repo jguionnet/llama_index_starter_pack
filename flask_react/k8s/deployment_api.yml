@@ -1,0 +1,59 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: lahonda
+  name: ai-index-api
+  labels:
+    app: ai-index-api
+    gwcp.guidewire.com/dept: "275"
+    gwcp.guidewire.com/maintained-by: pod-lahonda
+    gwcp.guidewire.com/created-by: pod-lahonda
+    gwcp.guidewire.com/tenant-name: lahonda
+    gwcp.guidewire.com/version: 0.0.1
+    gwcp.guidewire.com/app-name: ai-index-api
+  annotations:
+    prometheus.io/probe: "true"
+spec:
+  ports:
+    - name: http
+      port: 5601
+  selector:
+    app: ai-index-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: lahonda
+  name: ai-index-api
+  labels:
+    app: ai-index-api
+    gwcp.guidewire.com/dept: "275"
+    gwcp.guidewire.com/maintained-by: pod-lahonda
+    gwcp.guidewire.com/created-by: pod-lahonda
+    gwcp.guidewire.com/tenant-name: lahonda
+    gwcp.guidewire.com/version: 0.0.1
+    gwcp.guidewire.com/app-name: ai-index-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-index-api
+  template:
+    metadata:
+      labels:
+        app: ai-index-api
+        gwcp.guidewire.com/dept: "275"
+        gwcp.guidewire.com/maintained-by: pod-lahonda
+        gwcp.guidewire.com/created-by: pod-lahonda
+        gwcp.guidewire.com/tenant-name: lahonda
+        gwcp.guidewire.com/version: 0.0.1
+        gwcp.guidewire.com/app-name: ai-index-api
+    spec:
+      containers:
+        - name: api-server
+          image: jguionne/flask_demo:latest
+          command: ["python", "flask_demo.py"]
+          ports:
+            - containerPort: 5602
+            - containerPort: 5601

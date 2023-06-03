@@ -1,0 +1,65 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: query-job
+  namespace: lahonda
+  labels:
+    app: ai-index
+    gwcp.guidewire.com/dept: "275"
+    gwcp.guidewire.com/maintained-by: pod-lahonda
+    gwcp.guidewire.com/created-by: pod-lahonda
+    gwcp.guidewire.com/tenant-name: lahonda
+    gwcp.guidewire.com/version: 0.0.1
+    gwcp.guidewire.com/app-name: ai-index
+spec:
+  template:
+    metadata:
+      name: query-job
+      labels:
+        app: ai-index
+        gwcp.guidewire.com/dept: "275"
+        gwcp.guidewire.com/maintained-by: pod-lahonda
+        gwcp.guidewire.com/created-by: pod-lahonda
+        gwcp.guidewire.com/tenant-name: lahonda
+        gwcp.guidewire.com/version: 0.0.1
+        gwcp.guidewire.com/app-name: ai-index
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      containers:
+        # - image: busybox
+        #   name: bb
+        #   command:
+        #     - "/bin/sh"
+        #     - "-c"
+        #     - "while true; do ls -al /app/data; sleep 5; done"
+        #   volumeMounts:
+        # #     - name: data-volume
+        # #       mountPath: /app/data_txt
+        #     - name: index-volume
+        #       mountPath: /app/storage   
+        - name: query-job
+          image: jguionne/index_and_query:latest
+          command: ["python", "IndexAndQuery.py", "-lq", "data"]
+          env:
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ai-index-api-key
+                  key: JG_OAI_API_KEY
+          volumeMounts:
+            # - name: data-volume
+            #   mountPath: /app/data_txt
+            - name: index-volume
+              mountPath: /app/storage
+      restartPolicy: Never
+      volumes:
+        # - name: data-volume
+        #   persistentVolumeClaim:
+        #     claimName: ai-data        
+        - name: index-volume
+          persistentVolumeClaim:
+            claimName: ai-index
+            # readOnly: true # OSError: [Errno 30] Read-only file system: './storage/data/docstore.json'
+  backoffLimit: 1
+

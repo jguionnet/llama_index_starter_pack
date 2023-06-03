@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ai-index
+  namespace: lahonda  
+  labels:
+    app: ai-index
+    gwcp.guidewire.com/dept: "275"
+    gwcp.guidewire.com/maintained-by: pod-lahonda
+    gwcp.guidewire.com/created-by: pod-lahonda
+    gwcp.guidewire.com/tenant-name: lahonda
+    gwcp.guidewire.com/version: 0.0.1
+    gwcp.guidewire.com/app-name: ai-index
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: ebs-csi-gp3

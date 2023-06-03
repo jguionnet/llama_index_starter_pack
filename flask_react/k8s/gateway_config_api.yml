@@ -1,0 +1,32 @@
+apiVersion: oort.ccs.guidewire.com/v1alpha1
+kind: GatewayConfig
+metadata:
+  name:  ai-index-api
+  namespace: lahonda
+  labels:
+    app: ai-index-api
+    gwcp.guidewire.com/dept: "275"
+    gwcp.guidewire.com/maintained-by: pod-lahonda
+    gwcp.guidewire.com/created-by: pod-lahonda
+    gwcp.guidewire.com/tenant-name: lahonda
+    gwcp.guidewire.com/version: 0.0.1
+    gwcp.guidewire.com/app-name: ai-index-api
+spec:
+    # A "profile" describes the set of features that you will use.
+    # In effort to keep this example simple, there are no features described here.
+    profiles:
+        -   name: Default
+    # A "path config" is used to apply your features (profiles) to your endpoints.
+    path_configs:
+        -   name: Default
+            # List all the paths needed to be exposed explicitly
+            paths:
+              - /
+              - /*
+            # Profiles can then be applied to paths.
+            profiles:
+              - Default
+    # Name of the service to which this configuration applies.
+    # This should be the name of your service resource that is already deployed.
+    service_ref: ai-index-api
+

@@ -1,0 +1,19 @@
+# FROM nikolaik/python-nodejs:python3.11-nodejs16-slim
+FROM python:3.11
+
+WORKDIR /app
+
+COPY . .
+
+ENV OPENAI_API_KEY=my_value
+
+RUN pip install -r requirements.txt && pip cache purge
+
+ENV FLASK_APP=flask_demo.py
+ENV FLASK_DEBUG=True
+ENV FLASK_RUN_PORT=5601
+# Flask
+EXPOSE 5602
+EXPOSE 5601
+
+CMD ["sh", "launch_app2.sh"]
