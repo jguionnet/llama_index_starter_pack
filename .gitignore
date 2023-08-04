@@ -8,3 +8,8 @@ build
 index.json
 stored_documents.pkl
 venv/
+
+.venv/
+
+**/.vscode/
+

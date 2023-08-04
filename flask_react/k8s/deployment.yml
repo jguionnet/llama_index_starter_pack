@@ -56,7 +56,7 @@ spec:
           command:
             - "/bin/sh"
             - "-c"
-            - "while true; do ls -al /app/storage; sleep 5; done"
+            - "while true; do ls -al /app/data; sleep 5; done"
           env:
             - name: OPENAI_API_KEY
               valueFrom:
@@ -65,10 +65,18 @@ spec:
                   key: JG_OAI_API_KEY
           volumeMounts:
             - name: index-volume
-              mountPath: /app/storage   
+              mountPath: /app/data   
+          resources:
+            requests:
+              cpu: "0.1"
+              memory: "256Mi" 
+            limits:
+              cpu: "0.5" 
+              memory: "512Mi" 
         - name: index-server
           image: jguionne/index_server:latest
-          command: ["python", "index_server.py"]
+          # command: ["python", "index_server.py"]
+          imagePullPolicy: Always
           ports:
             - containerPort: 5602
           env:
@@ -79,14 +87,33 @@ spec:
                   key: JG_OAI_API_KEY
           volumeMounts:
             - name: index-volume
-              mountPath: /app/storage
+              mountPath: /app/data
+          resources:
+            requests:
+              cpu: "0.1"
+              memory: "256Mi" 
+            limits:
+              cpu: "0.5" 
+              memory: "512Mi" 
         - name: api-server
-          image: jguionne/flask_demo:latest
-          command: ["python", "flask_demo.py"]
+          image: jguionne/rest_api_server:latest
+          imagePullPolicy: Always
+          # command: ["python", "rest_api_server.py"]
           ports:
             - containerPort: 5602
             - containerPort: 5001
+          volumeMounts:
+            - name: index-volume
+              mountPath: /app/data   
+          resources:
+            requests:
+              cpu: "0.1"
+              memory: "256Mi" 
+            limits:
+              cpu: "0.5" 
+              memory: "512Mi"
       volumes:     
         - name: index-volume
           persistentVolumeClaim:
             claimName: ai-index
+  

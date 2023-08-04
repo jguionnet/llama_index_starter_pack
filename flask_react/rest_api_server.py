@@ -7,14 +7,17 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 CORS(app)
 
+VOLUME_ROOT = os.environ.get("VOLUME_ROOT")
+UPLOAD_FOLDER = VOLUME_ROOT + '/uploads'
+
+
 # initialize manager connection
 # NOTE: you might want to handle the password in a less hardcoded way
-manager = BaseManager(('', 5602), b'password')
+manager = BaseManager(('0.0.0.0', 5602), b'password')
 manager.register('query_index')
 manager.register('insert_into_index')
 manager.register('get_documents_list')
 manager.connect()
-
 
 @app.route("/query", methods=["GET"])
 def query_index():
@@ -36,40 +39,43 @@ def query_index():
     return make_response(jsonify(response_json)), 200
 
 
-@app.route("/uploadFile", methods=["POST"])
+@app.route('/upload/test', methods=['POST'])
+def file_upload():
+    file = request.files['file']
+    filename = file.filename
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.makedirs(UPLOAD_FOLDER)
+    file.save(os.path.join(UPLOAD_FOLDER, filename))
+    return {"message": f"The file '{filename}' has been successfully uploaded."}, 200
+
+
+@app.route("/upload", methods=["POST"])
 def upload_file():
     global manager
     if 'file' not in request.files:
         return "Please send a POST request with a file", 400
-    
     filepath = None
-    try:
-        uploaded_file = request.files["file"]
-        filename = secure_filename(uploaded_file.filename)
-        filepath = os.path.join('documents', os.path.basename(filename))
-        uploaded_file.save(filepath)
+    try: 
+        file = request.files["file"]
+        filename = file.filename
+        if not os.path.exists(UPLOAD_FOLDER):
+            os.makedirs(UPLOAD_FOLDER)
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(filepath)
+        manager.insert_into_index(filepath, doc_id=filename )
 
-        if request.form.get("filename_as_doc_id", None) is not None:
-            manager.insert_into_index(filepath, doc_id=filename)
-        else:
-            manager.insert_into_index(filepath)
     except Exception as e:
         # cleanup temp file
         if filepath is not None and os.path.exists(filepath):
             os.remove(filepath)
         return "Error: {}".format(str(e)), 500
 
-    # cleanup temp file
-    if filepath is not None and os.path.exists(filepath):
-        os.remove(filepath)
-
-    return "File inserted!", 200
+    return {"message": f"The file '{filename}' has been successfully indexed."}, 200
 
 
 @app.route("/getDocuments", methods=["GET"])
 def get_documents():
     document_list = manager.get_documents_list()._getvalue()
-
     return make_response(jsonify(document_list)), 200
     
 
@@ -79,5 +85,5 @@ def home():
 
 
 if __name__ == "__main__":
-    print('Starting Flask Demo API server...')
+    print('Starting Flask REST API server...')
     app.run(debug=True, host="0.0.0.0", port=5001)

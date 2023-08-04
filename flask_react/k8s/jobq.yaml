@@ -37,7 +37,7 @@ spec:
         # #     - name: data-volume
         # #       mountPath: /app/data_txt
         #     - name: index-volume
-        #       mountPath: /app/storage   
+        #       mountPath: /app/uploads   
         - name: query-job
           image: jguionne/index_and_query:latest
           command: ["python", "IndexAndQuery.py", "-lq", "data"]
@@ -51,7 +51,7 @@ spec:
             # - name: data-volume
             #   mountPath: /app/data_txt
             - name: index-volume
-              mountPath: /app/storage
+              mountPath: /app/uploads
       restartPolicy: Never
       volumes:
         # - name: data-volume
@@ -60,6 +60,6 @@ spec:
         - name: index-volume
           persistentVolumeClaim:
             claimName: ai-index
-            # readOnly: true # OSError: [Errno 30] Read-only file system: './storage/data/docstore.json'
+            # readOnly: true # OSError: [Errno 30] Read-only file system: './uploads/data/docstore.json'
   backoffLimit: 1
 

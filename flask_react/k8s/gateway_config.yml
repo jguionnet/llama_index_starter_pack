@@ -23,6 +23,8 @@ spec:
             paths:
               - /
               - /*
+              - /upload/*
+              
             # Profiles can then be applied to paths.
             profiles:
               - Default

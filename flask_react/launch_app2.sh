@@ -1,6 +1,9 @@
 #!/bin/bash -x
 
-env
+
+export VOLUME_ROOT=/Users/jguionnet/workspace/llama_index_starter_pack/flask_react/volume
+export API_BASE_URL="http://127.0.0.1:5001"
+
 # start backend index server
 python ./index_server.py &
 echo "index_server running..."
@@ -9,7 +12,7 @@ echo "index_server running..."
 sleep 15
 
 # start the flask server
-python ./flask_demo.py 
+python ./rest_api_server.py &
 echo "flask demo done..."
 
-
+streamlit run streamlit_ui.py

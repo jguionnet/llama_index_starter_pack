@@ -1,0 +1,16 @@
+FROM python:3.11.0-slim
+
+WORKDIR /app
+
+COPY streamlit_ui.py /app
+COPY requirements.txt /app
+ENV API_BASE_URL="https://lahonda-ai-index.api.dev.ccs.guidewire.net"
+
+RUN pip install -r requirements.txt && pip cache purge
+
+# Streamlit
+CMD ["streamlit", "run", "streamlit_ui.py"]
+EXPOSE 8501
+
+
+
