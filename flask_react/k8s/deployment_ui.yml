@@ -1,0 +1,66 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: lahonda
+  name: ai-index-ui
+  labels:
+    app: ai-index-ui
+    gwcp.guidewire.com/dept: "275"
+    gwcp.guidewire.com/maintained-by: pod-lahonda
+    gwcp.guidewire.com/created-by: pod-lahonda
+    gwcp.guidewire.com/tenant-name: lahonda
+    gwcp.guidewire.com/version: 0.0.1
+    gwcp.guidewire.com/app-name: ai-index-ui
+  annotations:
+    prometheus.io/probe: "true"
+spec:
+  ports:
+    - name: http
+      port: 8501
+  selector:
+    app: ai-index-ui
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: lahonda
+  name: ai-index-ui
+  labels:
+    app: ai-index-ui
+    gwcp.guidewire.com/dept: "275"
+    gwcp.guidewire.com/maintained-by: pod-lahonda
+    gwcp.guidewire.com/created-by: pod-lahonda
+    gwcp.guidewire.com/tenant-name: lahonda
+    gwcp.guidewire.com/version: 0.0.1
+    gwcp.guidewire.com/app-name: ai-index-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-index-ui
+  template:
+    metadata:
+      labels:
+        app: ai-index-ui
+        gwcp.guidewire.com/dept: "275"
+        gwcp.guidewire.com/maintained-by: pod-lahonda
+        gwcp.guidewire.com/created-by: pod-lahonda
+        gwcp.guidewire.com/tenant-name: lahonda
+        gwcp.guidewire.com/version: 0.0.1
+        gwcp.guidewire.com/app-name: ai-index-ui
+    spec:
+      containers:
+        - name: ui-server
+          image: jguionne/streamlit_ui:latest
+          # command: ["python", "rest_api_server.py"]
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8501
+          resources:
+            requests:
+              cpu: "0.1"
+              memory: "256Mi" 
+            limits:
+              cpu: "0.5" 
+              memory: "512Mi" 

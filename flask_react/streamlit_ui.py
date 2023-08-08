@@ -1,9 +1,6 @@
 import os
 import streamlit as st
 import requests
-import json
-from io import StringIO
-from urllib3 import encode_multipart_formdata
 
 baseURL = os.environ.get("API_BASE_URL")
 

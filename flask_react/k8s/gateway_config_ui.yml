@@ -1,0 +1,36 @@
+apiVersion: oort.ccs.guidewire.com/v1alpha1
+kind: GatewayConfig
+metadata:
+  name:  ai-index-ui
+  namespace: lahonda
+  labels:
+    app: ai-index-ui
+    gwcp.guidewire.com/dept: "275"
+    gwcp.guidewire.com/maintained-by: pod-lahonda
+    gwcp.guidewire.com/created-by: pod-lahonda
+    gwcp.guidewire.com/tenant-name: lahonda
+    gwcp.guidewire.com/version: 0.0.1
+    gwcp.guidewire.com/app-name: ai-index-ui
+spec:
+    # A "profile" describes the set of features that you will use.
+    # In effort to keep this example simple, there are no features described here.
+    profiles:
+        -   name: external
+            internal_only: true
+    path_configs:        
+        -   name: external
+            # List all the paths needed to be exposed explicitly
+            paths:
+              - /** # '/**' is a recursive wildcard and matches all paths
+            # Profiles can then be applied to paths.   
+            profiles:
+              - external
+    # cors:
+    #   origins: 
+    #     - '*' # This is a recursive wildcard and matches all origins
+    # Name of the service to which this configuration applies.
+    # This should be the name of your service resource that is already deployed.
+    service_ref: ai-index-ui
+    service_alias: ai-index-ui # `service_alias` controls the <application> name in the URL.
+    enable_sub_domain: false # Required in order to exclude '.api.' from the URL.    service_ref: ai-index-ui
+
