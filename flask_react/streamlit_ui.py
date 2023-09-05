@@ -35,31 +35,32 @@ with upload_tab:
 
     # check if a file was uploaded
     if uploaded_file is not None:
-        # read the contents of the file
-        file_contents = uploaded_file.getvalue()
-        # do something with the file contents
-        st.write("File contents:")
-        st.write(file_contents[0:200])
-        # Create a dictionary with the file data
-        files = {"file": file_contents}
-        # Send a POST request to the endpoint with the file data
-        response = requests.post(baseURL+"/upload", files=files)
-       # response = requests.post(url=url, body=body, headers=header)
-        st.subheader("Request POST Header - just for debugging")
-        st.json(dict(response.request.headers))
-        st.subheader("Response Status Code - just for debugging")
-        st.info(f'Status Code: {response.status_code}')
-        st.subheader("Response Header - just for debugging")
-        st.json(dict(response.headers))
-        st.subheader("Response Content - just for debugging")
-        st.write(response.content)
-        if response.status_code == 200:
-            # get the response data as a JSON object
-            data = response
-            st.markdown("success:" + str(response))
-        else:
-            # handle the error
-            st.markdown("Error:" + str(response))
+        with st.spinner("Uploading and indexing the file ..."):
+            # read the contents of the file
+            file_contents = uploaded_file.getvalue()
+            # do something with the file contents
+            st.write("File contents:")
+            st.write(file_contents[0:200])
+            # Create a dictionary with the file data
+            files = {"file": file_contents}
+            # Send a POST request to the endpoint with the file data
+            response = requests.post(baseURL+"/upload", files=files)
+        # response = requests.post(url=url, body=body, headers=header)
+            st.subheader("Request POST Header - just for debugging")
+            st.json(dict(response.request.headers))
+            st.subheader("Response Status Code - just for debugging")
+            st.info(f'Status Code: {response.status_code}')
+            st.subheader("Response Header - just for debugging")
+            st.json(dict(response.headers))
+            st.subheader("Response Content - just for debugging")
+            st.write(response.content)
+            if response.status_code == 200:
+                # get the response data as a JSON object
+                data = response
+                st.markdown("success:" + str(response))
+            else:
+                # handle the error
+                st.markdown("Error:" + str(response))
 
 
 with query_tab:

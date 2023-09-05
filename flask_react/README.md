@@ -1,5 +1,8 @@
 # local
 
+- Activate the virtual environment: `source ../.venv/bin/activate` (macOS/Linux) or `..\.venv\Scripts\activate` (Windows).
+
+
 `./launch_app2.sh`
 
 ```
